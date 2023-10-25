@@ -6,7 +6,10 @@ use DOMXPath;
 use DOMDocument;
 use Goutte\Client;
 use Illuminate\Http\Request;
+use App\Exports\ContactsExport;
+use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Cookie;
+use PhpParser\Node\Expr\New_;
 
 class ParserController extends Controller
 {
@@ -113,15 +116,21 @@ class ParserController extends Controller
                     preg_match($pattern, $content, $matches);
                     if (!empty($matches)) {
 
-                        $data[$keys[0]] = [
-                            isset($matches[0]) ? $matches[0] : null,
-                        ];
-                        $data[$keys[1]] = [
-                            isset($matches[1]) ? $matches[1] : null,
-                        ];
-                        $data[$keys[2]] = [
-                            isset($matches[2]) ? $matches[2] : null,
-                        ];
+                        if (!is_null($keys[0])) {
+                            $data[$keys[0]] = [
+                                isset($matches[0]) ? $matches[0] : null,
+                            ];
+                        }
+                        if (!is_null($keys[1])) {
+                            $data[$keys[1]] = [
+                                isset($matches[1]) ? $matches[1] : null,
+                            ];
+                        }
+                        if (!is_null($keys[2])) {
+                            $data[$keys[2]] = [
+                                isset($matches[2]) ? $matches[2] : null,
+                            ];
+                        }
                     }
                 }
 
@@ -159,11 +168,23 @@ class ParserController extends Controller
                     $keys[2] => $third,
                 ];
 
+
+                // foreach ($result as $key => $value) {
+                //     if (is_string($value)) {
+                //         $value = json_decode('"' . $value . '"');
+                //     }
+                // }
+
                 $results[] = $result;
             }
         }
+
+
+        // $export = new ContactsExport($results);
+
         dd($results);
         // return response()->json($results);
+        // return Excel::download($export, 'contacts.xlsx');
     }
 
 
